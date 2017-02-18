@@ -65,7 +65,6 @@
       <AsmXUnitTests Include=".\src\ServiceManagement\Network\Commands.Network.Test\bin\Debug\Microsoft.WindowsAzure.Commands.ServiceManagement.Network.Test.dll"/>
     </ItemGroup>
     <ItemGroup Condition=" '$(scope)' == 'all' ">
-	  <XUnitTests Include=".\setup\PowerShellSetup.Test\bin\Debug\PowerShellSetup.Test.dll"/>
       <XUnitTests Include=".\src\ResourceManager\SiteRecovery\Commands.SiteRecovery.Test\bin\Debug\Microsoft.Azure.Commands.SiteRecovery.Test.dll"/> 
       <XUnitTests Include=".\src\ResourceManager\Sql\Commands.Sql.Test\bin\Debug\Microsoft.Azure.Commands.Sql.Test.dll"/>
       <XUnitTests Include=".\src\ResourceManager\Resources\Commands.Resources.Test\bin\Debug\Microsoft.Azure.Commands.Resources.Test.dll"/>
@@ -94,11 +93,7 @@
     </ItemGroup>
     <ItemGroup Condition=" '$(scope)' != 'all' and '$(scope)' != 'ServiceManagement' and '$(scope)' != 'AzureStorage' ">
       <XUnitTests Include="$(MSBuildProjectDirectory)\src\ResourceManager\$(scope)\*\bin\Debug\*.Test.dll"/>
-    </ItemGroup>	
-	<ItemGroup Condition=" '$(Configuration)' == 'Release' AND '$(scope)' == 'all' AND '$(CodeSign)' == 'true' ">
-		<!-- We want to run setup tests related to signing that can only be run on signed bits -->
-		<XUnitRelTests Include=".\setup\PowerShellSetup.Test\bin\Release\PowerShellSetup.Test.dll" />
-	</ItemGroup>
+    </ItemGroup>
   </Target>
   
   <Target Name="InvokeXUnit" DependsOnTargets="DeclareXunitTests">
@@ -122,6 +117,8 @@
 			DiagnosticMessages="false"
 			ContinueOnError="false" 
 			Condition=" @(XUnitTests) != '' "/>
+
+	<CallTarget Targets="TestSetup" />
     <OnError ExecuteTargets="TimeoutErrorHandler"/>
   </Target>
   
@@ -145,22 +142,8 @@
 			DiagnosticMessages="false"
 			ContinueOnError="false" 
 			Condition=" @(XUnitTests) != '' "/>
-		
-	<Message Importance="high" Text="Running XUnit tests targeted for release configuration" Condition=" @(XUnitRelTests) != '' "/>
-	<Message Text="@(XUnitRelTests)" Condition=" @(XUnitRelTests) != '' "/>
-	<xunit 
-		Assemblies="@(XUnitRelTests)"
-		AppDomains="true"
-		ShadowCopy="false"
-		ParallelizeTestCollections="false"
-		ParallelizeAssemblies="true"
-		IncludeTraits="SignedBuild=BVT"
-		Html="$(TestOutputDirectory)\AzurePSStackSignedTestResults.html"
-		MaxParallelThreads="10"
-		DiagnosticMessages="false"
-		ContinueOnError="false"
-		Condition=" '$(Configuration)' == 'Release' AND '$(scope)' == 'all' AND '$(CodeSign)' == 'true' AND @(XUnitRelTests) != '' "/>
-			
+	
+	<CallTarget Targets="TestSetup" />
     <OnError ExecuteTargets="TimeoutErrorHandler"/>
   </Target>
   
@@ -174,7 +157,7 @@
 		
 		<ItemGroup Condition=" '$(Configuration)' == 'Release' AND '$(scope)' == 'all' AND '$(CodeSign)' == 'true' ">
 			<!-- We want to run setup tests related to signing that can only be run on signed bits -->
-			<SetupRelTests Include=".\setup\PowerShellSetup.Test\bin\Release\PowerShellSetup.Test.dll" />
+			<SetupReleaseTests Include=".\setup\PowerShellSetup.Test\bin\Release\PowerShellSetup.Test.dll" />
 		</ItemGroup>
 		
 		<xunit 
@@ -192,7 +175,7 @@
 			Condition=" '$(scope)' == 'all' "/>
 			
 		<xunit 
-			Assemblies="@(SetupRelTests)"
+			Assemblies="@(SetupReleaseTests)"
 			AppDomains="true"
 			ShadowCopy="false"
 			ParallelizeTestCollections="false"

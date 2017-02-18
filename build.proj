@@ -64,13 +64,14 @@
     <OnPremiseBuild Condition=" Exists($(OnPremiseBuildTasks)) ">true</OnPremiseBuild>
     <OnPremiseBuild Condition=" ! Exists($(OnPremiseBuildTasks)) ">false</OnPremiseBuild>
   </PropertyGroup>
-  <UsingTask Condition=" $(OnPremiseBuild) " TaskName="CodeSigningTask" AssemblyFile="$(CIToolsPath)\Microsoft.WindowsAzure.Tools.Build.Tasks.OnPremise.dll" />
-  <UsingTask Condition=" $(OnPremiseBuild) " TaskName="CorporateValidation" AssemblyFile="$(CIToolsPath)\Microsoft.WindowsAzure.Tools.Build.Tasks.OnPremise.dll" />
-  <UsingTask TaskName="ValidateStrongNameSignatureTask" AssemblyFile="$(LibraryToolsFolder)\Microsoft.Azure.Build.Tasks.dll"  />
+  
+	<UsingTask Condition=" $(OnPremiseBuild) " TaskName="CodeSigningTask" AssemblyFile="$(CIToolsPath)\Microsoft.WindowsAzure.Tools.Build.Tasks.OnPremise.dll" />
+	<UsingTask Condition=" $(OnPremiseBuild) " TaskName="CorporateValidation" AssemblyFile="$(CIToolsPath)\Microsoft.WindowsAzure.Tools.Build.Tasks.OnPremise.dll" />
+	<UsingTask TaskName="ValidateStrongNameSignatureTask" AssemblyFile="$(LibraryToolsFolder)\Microsoft.Azure.Build.Tasks.dll"  />
 	<UsingTask TaskName="FilterOutAutoRestLibraries" AssemblyFile="$(LibraryToolsFolder)\Microsoft.Azure.Build.Tasks.dll"  />
 	<UsingTask TaskName="DebugTask" AssemblyFile="$(LibraryToolsFolder)\Microsoft.Azure.Build.Tasks.dll"  />
 	<UsingTask TaskName="VerifyAuthenticodeSignatureTask" AssemblyFile="$(LibraryToolsFolder)\Microsoft.Azure.Build.Tasks.dll"  />
-	<UsingTask AssemblyFile="$(MSBuildProjectDirectory)\src\packages\xunit.MSBuild.2.0.0.0\tools\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit" />
+	<UsingTask TaskName="Xunit.Runner.MSBuild.xunit" AssemblyFile="$(MSBuildProjectDirectory)\src\packages\xunit.MSBuild.2.0.0.0\tools\xunit.runner.msbuild.dll" />
 	<UsingTask TaskName="SetEnvVar" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >  
 		<ParameterGroup>
 			<EnvName ParameterType="System.String" Required="true" />
@@ -174,7 +175,6 @@
       ContinueOnError="false" />
 	      
     <CallTarget Targets="CodeSignBinaries" Condition=" '$(CodeSign)' == 'true' " />
-    
 	<CallTarget Targets="BuildSetup"/>
     <CallTarget Targets="CodeSignInstaller" 
                 Condition=" '$(CodeSign)' == 'true' and '$(Scope)' == 'all'" />    
@@ -204,9 +204,6 @@
              Targets="Build" Properties="Configuration=Debug;Platform=AnyCPU" />
   </Target>
   
-  <UsingTask TaskName="ValidateStrongNameSignatureTask" AssemblyFile="$(LibraryToolsFolder)\Microsoft.Azure.Build.Tasks.dll"  />
-  <UsingTask TaskName="FilterOutAutoRestLibraries" AssemblyFile="$(LibraryToolsFolder)\Microsoft.Azure.Build.Tasks.dll"  />  
-  
   <Target Name="CodeSignBinaries">
     <PropertyGroup>
       <!--public token associated with MSSharedLibKey.snk-->
@@ -232,7 +229,8 @@
       <DelaySignedAssembliesToSign Include="$(LibrarySourceFolder)\Package\$(Configuration)\**\Microsoft.Azure.Common.Extensions.dll" />
       <ScriptsToSign Include="$(LibrarySourceFolder)\Package\$(Configuration)\**\*.ps1" />
       <ScriptsToSign Include="$(LibrarySourceFolder)\Package\$(Configuration)\**\*.psm1" />
-      <ScriptsToSign Include="$(LibrarySourceFolder)\Package\$(Configuration)\**\*.ps1xml" />
+      <ScriptsToSign Include="$(LibrarySourceFolder)\Package\$(Configuration)\**\*.ps1xml" />	  
+	  <ScriptsToSign Include="$(LibrarySourceFolder)\Package\$(Configuration)\**\*.js" />
 	  <ScriptsToSign Include="$(LibraryRoot)setup\Setup\*.ps1" />
     </ItemGroup>
     
@@ -278,7 +276,7 @@
         Condition="!$(DelaySign) and '@(DelaySignedAssembliesToSign)' != ''"/>
 		
 	<VerifyAuthenticodeSignatureTask ProbingDirectory="$(PackageDirectory)\$(Configuration)"
-                    FileFilterPattern="microsoft.*.dll;system.*.dll;*.ps1;*.psm1;*.ps1xml">
+                    FileFilterPattern="microsoft.*.dll;system.*.dll;*.ps1;*.psm1;*.ps1xml;*.js">
       <Output TaskParameter="AuthCodeSignTaskErrorsDetected" PropertyName="AuthTaskFailed" />
     </VerifyAuthenticodeSignatureTask>
         

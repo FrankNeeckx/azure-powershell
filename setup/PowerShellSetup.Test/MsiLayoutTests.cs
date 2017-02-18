@@ -1,4 +1,7 @@
-﻿namespace PowerShellSetup.Tests
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace PowerShellSetup.Tests
 {
     using System;
     using System.Collections.Generic;
@@ -43,35 +46,35 @@
             Assert.NotEmpty(_procOutput);
         }
         
-        [Fact]
-        [Trait("AcceptanceType", "CheckIn")]
-        public void VerifyNoJavaScriptFiles()
-        {
-            string procErr = string.Empty;
-            string msiContentsDirPath = ExtractMsiContents(out procErr);
-            IEnumerable<string> msiFiles = Directory.EnumerateFiles(msiContentsDirPath, "*.js", SearchOption.AllDirectories);
-            TestLog.WriteLine("Expecting no *.js files in MSI");            
-            foreach (string unsigFile in msiFiles)
-            {
-                TestLog.WriteLine(unsigFile);
-            }
-            Assert.Equal(0, msiFiles.Count<string>());
-        }
+        //[Fact]
+        //[Trait("AcceptanceType", "CheckIn")]
+        //public void VerifyNoJavaScriptFiles()
+        //{
+        //    string procErr = string.Empty;
+        //    string msiContentsDirPath = ExtractMsiContents(out procErr);
+        //    IEnumerable<string> msiFiles = Directory.EnumerateFiles(msiContentsDirPath, "*.js", SearchOption.AllDirectories);
+        //    TestLog.WriteLine("Expecting no *.js files in MSI");            
+        //    foreach (string unsigFile in msiFiles)
+        //    {
+        //        TestLog.WriteLine(unsigFile);
+        //    }
+        //    Assert.Equal(0, msiFiles.Count<string>());
+        //}
 
-        [Fact]
-        [Trait("AcceptanceType", "CheckIn")]
-        public void VerifyNoJsonFiles()
-        {
-            string procErr = string.Empty;
-            string msiContentsDirPath = ExtractMsiContents(out procErr);
-            IEnumerable<string> msiFiles = Directory.EnumerateFiles(msiContentsDirPath, "*.json", SearchOption.AllDirectories);
-            TestLog.WriteLine("Expecting no *.json files in MSI");
-            foreach (string unsigFile in msiFiles)
-            {
-                TestLog.WriteLine(unsigFile);
-            }
-            Assert.Equal(0, msiFiles.Count<string>());
-        }
+        //[Fact]
+        //[Trait("AcceptanceType", "CheckIn")]
+        //public void VerifyNoJsonFiles()
+        //{
+        //    string procErr = string.Empty;
+        //    string msiContentsDirPath = ExtractMsiContents(out procErr);
+        //    IEnumerable<string> msiFiles = Directory.EnumerateFiles(msiContentsDirPath, "*.json", SearchOption.AllDirectories);
+        //    TestLog.WriteLine("Expecting no *.json files in MSI");
+        //    foreach (string unsigFile in msiFiles)
+        //    {
+        //        TestLog.WriteLine(unsigFile);
+        //    }
+        //    Assert.Equal(0, msiFiles.Count<string>());
+        //}
         
         [Fact]
         [Trait("SignedBuild", "BVT")]
@@ -93,6 +96,7 @@
                 .Union<string>(Directory.EnumerateFiles(msiContentsDir, "security*.dll", SearchOption.AllDirectories))
                 .Union<string>(Directory.EnumerateFiles(msiContentsDir, "bouncy*.dll", SearchOption.AllDirectories))
                 .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.psd1", SearchOption.AllDirectories))
+                .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.json", SearchOption.AllDirectories))
                 .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.msi", SearchOption.AllDirectories));
 
             Assert.NotNull(msiFiles);
@@ -120,6 +124,7 @@
             IEnumerable<string> dllFiles = filesToVerify.Where<string>((fl) => fl.EndsWith(".dll")).ToList<string>();
             IEnumerable<string> scriptFiles = filesToVerify.Where<string>((fl) => fl.EndsWith(".ps1"))
                 .Union<string>(filesToVerify.Where<string>((fl) => fl.EndsWith(".psm1")))
+                .Union<string>(filesToVerify.Where<string>((fl) => fl.EndsWith(".js")))
                 .Union<string>(filesToVerify.Where<string>((fl) => fl.EndsWith(".ps1xml")));
 
             TestLog.WriteLine("Verify number of dlls, script files match");
@@ -225,46 +230,6 @@
 
             return friendlyAlgorithmName;
         }
-
-        //private void CheckFileSignature()
-        //{
-        //    bool isSigned = true;
-        //    string fileName = Path.GetFileName(providedFilePath);
-        //    string calculatedFullPath = Path.GetFullPath(providedFilePath);
-
-        //    if (File.Exists(calculatedFullPath))
-        //    {
-        //        using (PowerShell ps = PowerShell.Create())
-        //        {
-        //            ps.AddCommand("Get-AuthenticodeSignature", true);
-        //            ps.AddParameter("FilePath", calculatedFullPath);
-        //            var cmdLetResults = ps.Invoke();
-
-        //            foreach (PSObject result in cmdLetResults)
-        //            {
-        //                Signature s = (Signature)result.BaseObject;
-        //                isSigned = s.Status.Equals(SignatureStatus.Valid);
-        //                string unsignedFileStatusFormat = "Signed by {0} algorithm ::: {1}";
-        //                string unsignFileStatus = string.Empty;
-        //                if (isSigned == true)
-        //                {
-        //                    string friendlyAlgorithmName = s.SignerCertificate.SignatureAlgorithm.FriendlyName;
-        //                    string match = expectedAlgorithmList.Find((pn) => pn.Equals(friendlyAlgorithmName, System.StringComparison.OrdinalIgnoreCase));
-        //                    if (string.IsNullOrEmpty(match))
-        //                    {
-        //                        unsignFileStatus = string.Format(unsignedFileStatusFormat, friendlyAlgorithmName, calculatedFullPath);
-        //                        unsignedFiles.Add(unsignFileStatus);
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    unsignFileStatus = string.Format(unsignedFileStatusFormat, "NOT SIGNED", calculatedFullPath);
-        //                    unsignedFiles.Add(unsignFileStatus);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
         #endregion
     }
 }
