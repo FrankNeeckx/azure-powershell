@@ -66,8 +66,8 @@
     </ItemGroup>
     <ItemGroup Condition=" '$(scope)' == 'all' ">
       <XUnitTests Include=".\src\ResourceManager\SiteRecovery\Commands.SiteRecovery.Test\bin\Debug\Microsoft.Azure.Commands.SiteRecovery.Test.dll"/> 
-      <XUnitTests Include=".\src\ResourceManager\Sql\Commands.Sql.Test\bin\Debug\Microsoft.Azure.Commands.Sql.Test.dll"/>
-      <XUnitTests Include=".\src\ResourceManager\Resources\Commands.Resources.Test\bin\Debug\Microsoft.Azure.Commands.Resources.Test.dll"/>
+	  <XUnitTests Include=".\src\ResourceManager\Sql\Commands.Sql.Test\bin\Debug\Microsoft.Azure.Commands.Sql.Test.dll"/>
+	  <XUnitTests Include=".\src\ResourceManager\Resources\Commands.Resources.Test\bin\Debug\Microsoft.Azure.Commands.Resources.Test.dll"/>
       <XUnitTests Include=".\src\ResourceManager\Compute\Commands.Compute.Test\bin\Debug\Microsoft.Azure.Commands.Compute.Test.dll"/>
       <XUnitTests Include=".\src\ResourceManager\Network\Commands.Network.Test\bin\Debug\Microsoft.Azure.Commands.Network.Test.dll"/>
       <XUnitTests Include=".\src\ResourceManager\DataFactories\Commands.DataFactories.Test\bin\Debug\Microsoft.Azure.Commands.DataFactories.Test.dll"/>
@@ -110,7 +110,7 @@
 			AppDomains="true"
 			ShadowCopy="false"
 			ParallelizeTestCollections="false"
-			ParallelizeAssemblies="true"
+			ParallelizeAssemblies="false"
 			IncludeTraits="AcceptanceType=CheckIn"
 			Html="$(TestOutputDirectory)\AzurePSStackTestResults.html"
 			MaxParallelThreads="10"
@@ -135,7 +135,7 @@
 			AppDomains="true"
 			ShadowCopy="false"
 			ParallelizeTestCollections="false"
-			ParallelizeAssemblies="true"
+			ParallelizeAssemblies="false"
 			ExcludeTraits="RunType=LiveOnly"
 			Html="$(TestOutputDirectory)\AzurePSStackAllTestResults.html"
 			MaxParallelThreads="10"
@@ -165,7 +165,7 @@
 			AppDomains="true"
 			ShadowCopy="false"
 			ParallelizeTestCollections="false"
-			ParallelizeAssemblies="true"
+			ParallelizeAssemblies="false"
 			IncludeTraits="AcceptanceType=CheckIn"
 			ExcludeTraits="SignedBuild=BVT"
 			Html="$(TestOutputDirectory)\AzurePSSetupTest.html"
@@ -179,7 +179,7 @@
 			AppDomains="true"
 			ShadowCopy="false"
 			ParallelizeTestCollections="false"
-			ParallelizeAssemblies="true"
+			ParallelizeAssemblies="false"
 			IncludeTraits="SignedBuild=BVT"
 			Html="$(TestOutputDirectory)\AzurePSSetupTestSigned.html"
 			MaxParallelThreads="10"
