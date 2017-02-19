@@ -97,11 +97,20 @@ namespace PowerShellSetup.Tests
                 .Union<string>(Directory.EnumerateFiles(msiContentsDir, "bouncy*.dll", SearchOption.AllDirectories))
                 .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.psd1", SearchOption.AllDirectories))
                 .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.json", SearchOption.AllDirectories))
+                .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.cscfg", SearchOption.AllDirectories))
+                .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.csdef", SearchOption.AllDirectories))
+                .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.cmd", SearchOption.AllDirectories))
+                .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.config", SearchOption.AllDirectories))
+                .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.php", SearchOption.AllDirectories))
+                .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.yml", SearchOption.AllDirectories))
+                .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.gitignore", SearchOption.AllDirectories))
+                .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.js", SearchOption.AllDirectories))   // We are doing this because Get-AuthenticodeSignature cannot verify .js files
                 .Union<string>(Directory.EnumerateFiles(msiContentsDir, "*.msi", SearchOption.AllDirectories));
 
             Assert.NotNull(msiFiles);
             IEnumerable<string> filesToVerify = msiFiles.Except<string>(exceptionFiles);
 
+            #region
             // Make sure filesToVerify do not have any of the files that are either external to MS 
             // or are not signed (which are expected not to be signed eg. psd1 files)
             List<string> noXmlFiles = filesToVerify.Where<string>((fl) => fl.EndsWith(".xml")).ToList<string>();
@@ -115,20 +124,28 @@ namespace PowerShellSetup.Tests
             List<string> noMsiFiles = filesToVerify.Where<string>((fl) => fl.EndsWith(".msi")).ToList<string>();
             //TestLog.WriteLine("Verifying no '*.msi' files are in the verify list of files");
             Assert.True(noMsiFiles.Count == 0);
+            #endregion
 
             List<string> noPsd1Files = filesToVerify.Where<string>((fl) => fl.EndsWith(".psd1")).ToList<string>();
             //TestLog.WriteLine("Verifying no '*.psd1' files are in the verify list of files");
             Assert.True(noPsd1Files.Count == 0);
-
+            
             // Now extract each category of files and verify if they matched to the algorithm they are expected to be signed
             IEnumerable<string> dllFiles = filesToVerify.Where<string>((fl) => fl.EndsWith(".dll")).ToList<string>();
             IEnumerable<string> scriptFiles = filesToVerify.Where<string>((fl) => fl.EndsWith(".ps1"))
                 .Union<string>(filesToVerify.Where<string>((fl) => fl.EndsWith(".psm1")))
-                .Union<string>(filesToVerify.Where<string>((fl) => fl.EndsWith(".js")))
+                //.Union<string>(filesToVerify.Where<string>((fl) => fl.EndsWith(".js")))   // We are doing this because Get-AuthenticodeSignature cannot verify .js files
                 .Union<string>(filesToVerify.Where<string>((fl) => fl.EndsWith(".ps1xml")));
 
+            IEnumerable<string> dllScriptCombined = dllFiles.Union<string>(scriptFiles);
+            IEnumerable<string> diff = filesToVerify.Except<string>(dllScriptCombined);
+
             TestLog.WriteLine("Verify number of dlls, script files match");
-            Assert.Equal((dllFiles.Count() + scriptFiles.Count()), filesToVerify.Count());
+            foreach(string fl in diff)
+            {
+                TestLog.WriteLine(fl);
+            }
+            Assert.Equal(dllScriptCombined.Count(), filesToVerify.Count());
 
             List<string> unsignedDlls = GetUnsignedFiles(dllFiles, expectedSignatureAlgos);
             TestLog.WriteLine("Verifying if DLLs are properly signed");
@@ -139,7 +156,7 @@ namespace PowerShellSetup.Tests
             TestLog.WriteLine("Verifying if SCRIPTS are properly signed");
             unsignedScripts.ForEach((unsigScript) => TestLog.WriteLine(unsigScript));
             Assert.Equal(unsignedScripts.Count, 0);
-
+            
             // We do this because, we sign MSI as SHA2 with SHA1 hash.
             // Verifying msi under windows --> Rightclick --> Properties will show SHA1
             // Verifying msi with Get-AuthenticodeSignature will return as SHA2
@@ -195,6 +212,28 @@ namespace PowerShellSetup.Tests
                     }
                 }
             });
+
+            return unsignedFiles;
+        }
+
+        private List<string> GetUnsignedFilesSync(IEnumerable<string> signedFiles, string expectedAlgorithm)
+        {
+            List<string> unsignedFiles = new List<string>();
+            string unsignedFileStatusFormat = "Expected signature '{0}', Actual '{1}' signature ::: {2}";
+
+            foreach(string providedFilePath in signedFiles)
+            {
+                string sigAlgo = GetFileSignature(providedFilePath);
+
+                if (string.IsNullOrEmpty(sigAlgo))
+                {
+                    unsignedFiles.Add(string.Format(unsignedFileStatusFormat, expectedAlgorithm, sigAlgo, providedFilePath));
+                }
+                else if (!sigAlgo.Equals(expectedAlgorithm, StringComparison.OrdinalIgnoreCase))
+                {
+                    unsignedFiles.Add(string.Format(unsignedFileStatusFormat, expectedAlgorithm, sigAlgo, providedFilePath));
+                }
+            }
 
             return unsignedFiles;
         }

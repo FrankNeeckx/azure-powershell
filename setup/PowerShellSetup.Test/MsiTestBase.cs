@@ -110,6 +110,8 @@ namespace PowerShellSetup.Tests
                 string msiDir = GetAzurePSMsiDirectory();
                 msiFullPath = Path.Combine(msiDir, MSI_NAME);
             }
+
+            TestLog.WriteLine(string.Format("Msi Path to be used for testing: {0}", msiFullPath));
             return msiFullPath;
         }
         
