@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C5676461-8BB7-4F2A-AC5B-6AA4CD148440}</ProjectGuid>
+    <ProjectGuid>{31899695-F5F1-4218-8DD4-B548F3834600}</ProjectGuid>	
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PowerShellSetup.Test</RootNamespace>
