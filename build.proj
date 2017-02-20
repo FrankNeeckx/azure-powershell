@@ -231,15 +231,17 @@
       DestinationFolder="$(LibrarySourceFolder)\Package\$(Configuration)" />
     <Copy SourceFiles="$(LibraryRoot)tools\AzureRM\AzureRM.psm1" 
       DestinationFolder="$(LibrarySourceFolder)\Package\$(Configuration)" />
-     <Copy SourceFiles="$(LibraryRoot)tools\AzureStack\AzureStack.psd1" 
+    <Copy SourceFiles="$(LibraryRoot)tools\AzureStack\AzureStack.psd1" 
       DestinationFolder="$(LibrarySourceFolder)\Package\$(Configuration)" />
-     <Copy SourceFiles="$(LibraryRoot)tools\AzureStack\AzureStack.psm1" 
+    <Copy SourceFiles="$(LibraryRoot)tools\AzureStack\AzureStack.psm1" 
       DestinationFolder="$(LibrarySourceFolder)\Package\$(Configuration)" Condition="Exists('$(LibraryRoot)tools\AzureStack\AzureStack.psm1')"/>
+	<Copy SourceFiles="$(LibraryRoot)\setup\PowerShellSetup.Test\**\PowerShellSetup.Test.dll"
+      DestinationFolder="$(LibrarySourceFolder)\Package\$(Configuration)" />
    
     <ItemGroup>
       <DelaySignedAssembliesToSign Include="$(LibrarySourceFolder)\Package\$(Configuration)\**\Microsoft*Azure*Commands*.dll" />
       <DelaySignedAssembliesToSign Include="$(LibrarySourceFolder)\Package\$(Configuration)\**\Microsoft.Azure.Common.Extensions.dll" />
-	  <DelaySignedAssembliesToSign Include="$(LibraryRoot)\setup\PowerShellSetup.Test\**\PowerShellSetup.Test.dll" />
+	  <DelaySignedAssembliesToSign Include="$(LibrarySourceFolder)\Package\$(Configuration)\PowerShellSetup.Test.dll" />
       <ScriptsToSign Include="$(LibrarySourceFolder)\Package\$(Configuration)\**\*.ps1" />
       <ScriptsToSign Include="$(LibrarySourceFolder)\Package\$(Configuration)\**\*.psm1" />
       <ScriptsToSign Include="$(LibrarySourceFolder)\Package\$(Configuration)\**\*.ps1xml" />	  
@@ -289,7 +291,7 @@
         Condition="!$(DelaySign) and '@(DelaySignedAssembliesToSign)' != ''"/>
 		
 	<VerifyAuthenticodeSignatureTask ProbingDirectory="$(PackageDirectory)\$(Configuration)"
-                    FileFilterPattern="microsoft.*.dll;system.*.dll;*.ps1;*.psm1;*.ps1xml">
+                    FileFilterPattern="microsoft.*.dll;system.*.dll;*.ps1;*.psm1;*.ps1xml;PowerShellSetup.Test.dll">
       <Output TaskParameter="AuthCodeSignTaskErrorsDetected" PropertyName="AuthTaskFailed" />
     </VerifyAuthenticodeSignatureTask>
         
@@ -301,7 +303,10 @@
     <Copy SourceFiles="$(LibrarySourceFolder)\Package\$(Configuration)\AzureStack.psd1" 
       DestinationFolder="$(LibraryRoot)tools\AzureStack" Condition="Exists('$(LibraryRoot)tools\AzureStack\AzureStack.psm1')" />
     <Copy SourceFiles="$(LibrarySourceFolder)\Package\$(Configuration)\AzureStack.psm1" 
-      DestinationFolder="$(LibraryRoot)tools\AzureStack" Condition="Exists('$(LibraryRoot)tools\AzureStack\AzureStack.psm1')" />  </Target>
+      DestinationFolder="$(LibraryRoot)tools\AzureStack" Condition="Exists('$(LibraryRoot)tools\AzureStack\AzureStack.psm1')" />
+	<Copy SourceFiles="$(LibrarySourceFolder)\Package\$(Configuration)\PowerShellSetup.Test.dll"
+      DestinationFolder="$(LibraryRoot)\setup\PowerShellSetup.Test\bin\$(Configuration)" />
+  </Target>
   
   <Target Name="CodeSignInstaller">
     <PropertyGroup>
