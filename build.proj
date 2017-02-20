@@ -37,6 +37,7 @@
     <CodeSign Condition=" '$(CodeSign)' == '' ">false</CodeSign>
     <!--Set this true only if you want to test the code sign workflow locally-->
     <DelaySign Condition =" '$(DelaySign)' == '' ">false</DelaySign>
+	<SignedOutputRootDir>$(LibraryRoot)signed</SignedOutputRootDir>
     <BuildOutputDirectory>$(PublishDirectory)\Build</BuildOutputDirectory>
     <SetupOutputDirectory>$(PublishDirectory)\Setup</SetupOutputDirectory>
     <TestOutputDirectory>$(PublishDirectory)\TestResults</TestOutputDirectory>
@@ -174,9 +175,10 @@
       Properties="Configuration=$(Configuration);Platform=Any CPU"
       BuildInParallel="$(BuildInParallel)" 
       ContinueOnError="false" />
-	  
-	<CallTarget Targets="BuildSetup"/>	
+
+	<CallTarget Targets="BuildSetupTest"/>
     <CallTarget Targets="CodeSignBinaries" Condition=" '$(CodeSign)' == 'true' " />	
+	<CallTarget Targets="BuildSetup"/>
     <CallTarget Targets="CodeSignInstaller" 
                 Condition=" '$(CodeSign)' == 'true' and '$(Scope)' == 'all'" />    
   </Target>
@@ -186,6 +188,15 @@
     Name="Full"
     DependsOnTargets="Clean;Build;Test" />
 
+	<Target Name="BuildSetupTest" Condition=" '$(Scope)' == 'all' ">
+		<MSBuild
+		  Projects=".\setup\PowerShellSetup.Test\PowerShellSetup.Test.csproj"
+		  Targets="Build"
+		  Properties="Configuration=$(Configuration);Platform=Any CPU"
+		  ContinueOnError="false"
+		  Condition=" '$(Scope)' == 'all' "/>
+	</Target>
+	
 	<Target Name="BuildSetup" Condition=" '$(Scope)' == 'all' ">
 		<!-- Copying shortcut to be signed -->
 		<Copy SourceFiles="$(LibrarySourceFolder)\Package\$(Configuration)\RemoveGalleryModules.ps1;$(LibrarySourceFolder)\Package\$(Configuration)\SetExecutionPolicy.ps1"
@@ -312,7 +323,7 @@
       Description="Microsoft Azure PowerShell"
       Keywords="Microsoft Azure PowerShell"
       UnsignedFiles="@(InstallersToSign)"
-      DestinationPath="$(LibraryRoot)\signed"
+      DestinationPath="$(SignedOutputRootDir)"
       SigningLogPath="$(LibraryRoot)\msi-signing.log"
       Certificates="402"
       ToolsPath="$(CIToolsPath)"
@@ -320,7 +331,7 @@
          
     <!--If we are testing locally then we copy the binaries and do not submit to the code sign server-->
     <Copy SourceFiles="@(InstallersToSign)" DestinationFolder="signed" Condition="$(DelaySign)" />
-	<SetEnvVar EnvName="SignedMsiDir" EnvValue="$(LibraryRoot)signed" />
+	<SetEnvVar EnvName="SignedMsiDir" EnvValue="$(SignedOutputRootDir)" />
   </Target>
   
   <!-- Publish all packages -->

@@ -99,8 +99,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\src\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\src\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props'))" />
   </Target>
-  <Target Name="BeforeBuild" DependsOnTargets="BuildWixProject" />
-  <Target Name="BuildWixProject">
+  <Target Name="BeforeBuild" DependsOnTargets="CopyMsi" />
+  <Target Name="CopyMsi">
+    <!--We do this because the test can then extract msi contents during running tests-->
     <ItemGroup>
       <MsiOutputDir Include="$(ProjectDir)..\..\signed\AzurePowerShell.msi" Condition="Exists('$(ProjectDir)..\..\signed\AzurePowerShell.msi')" />
       <MsiOutputDir Include="$(ProjectDir)..\build\$(Configuration)\AzurePowerShell.msi" Condition=" '@(MsiOutputDir)' == '' " />
