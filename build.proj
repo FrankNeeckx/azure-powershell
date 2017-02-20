@@ -174,9 +174,9 @@
       Properties="Configuration=$(Configuration);Platform=Any CPU"
       BuildInParallel="$(BuildInParallel)" 
       ContinueOnError="false" />
-	      
-    <CallTarget Targets="CodeSignBinaries" Condition=" '$(CodeSign)' == 'true' " />
-	<CallTarget Targets="BuildSetup"/>
+	  
+	<CallTarget Targets="BuildSetup"/>	
+    <CallTarget Targets="CodeSignBinaries" Condition=" '$(CodeSign)' == 'true' " />	
     <CallTarget Targets="CodeSignInstaller" 
                 Condition=" '$(CodeSign)' == 'true' and '$(Scope)' == 'all'" />    
   </Target>
