@@ -44,7 +44,6 @@
     <TestTimeout Condition=" '$(TestTimeout)' == '' ">100000000</TestTimeout>
   </PropertyGroup>
   
-
   <Target Name="InvokeMSTest">
     <!--Remove existing test result; otherwise mstest will error-->
     <Delete Files="$(_testResult)"/>
@@ -168,7 +167,7 @@
 			ParallelizeAssemblies="false"
 			IncludeTraits="AcceptanceType=CheckIn"
 			ExcludeTraits="SignedBuild=BVT"
-			Html="$(TestOutputDirectory)\AzurePSSetupTest.html"
+			Html="$(TestOutputDirectory)\AzPsStackSetupTest.html"
 			MaxParallelThreads="10"
 			DiagnosticMessages="false"
 			ContinueOnError="false"
@@ -181,7 +180,7 @@
 			ParallelizeTestCollections="false"
 			ParallelizeAssemblies="false"
 			IncludeTraits="SignedBuild=BVT"
-			Html="$(TestOutputDirectory)\AzurePSSetupTestSigned.html"
+			Html="$(TestOutputDirectory)\AzPsStackSetupTestSigned.html"
 			MaxParallelThreads="10"
 			DiagnosticMessages="false"
 			ContinueOnError="false"
