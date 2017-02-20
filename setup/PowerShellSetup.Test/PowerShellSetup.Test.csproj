@@ -104,9 +104,9 @@
     <!--We do this because the test can then extract msi contents during running tests-->
     <ItemGroup>
       <MsiOutputDir Include="$(ProjectDir)..\..\signed\AzurePowerShell.msi" Condition="Exists('$(ProjectDir)..\..\signed\AzurePowerShell.msi')" />
-      <MsiOutputDir Include="$(ProjectDir)..\build\$(Configuration)\AzurePowerShell.msi" Condition=" '@(MsiOutputDir)' == '' " />
+      <MsiOutputDir Include="$(ProjectDir)..\build\$(Configuration)\AzurePowerShell.msi" Condition="Exists('$(ProjectDir)..\build\$(Configuration)\AzurePowerShell.msi')" />
     </ItemGroup>
-    <Message Text="Copying @(MsiOutputDir)" />
+    <Message Text="Copying @(MsiOutputDir)" Condition=" '@(MsiOutputDir)' != '' " />
     <Copy SourceFiles="@(MsiOutputDir)" DestinationFolder="$(OutputPath)" Condition="'@(MsiOutputDir)' != ''" SkipUnchangedFiles="false" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
