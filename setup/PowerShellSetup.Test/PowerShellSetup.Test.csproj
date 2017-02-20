@@ -107,11 +107,11 @@
       <MsiOutputDir Include="$(ProjectDir)..\build\$(Configuration)\AzurePowerShell.msi" Condition=" '@(MsiOutputDir)' == '' " />
     </ItemGroup>
     <Message Text="Copying @(MsiOutputDir)" />
-    <Copy SourceFiles="@(MsiOutputDir)" DestinationFolder="$(OutputPath)" ContinueOnError="false" SkipUnchangedFiles="false" />
+    <Copy SourceFiles="@(MsiOutputDir)" DestinationFolder="$(OutputPath)" Condition="'@(MsiOutputDir)' != ''" SkipUnchangedFiles="false" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="AfterBuild">
+  <Target Name="AfterBuild">  
   </Target>
   -->
 </Project>

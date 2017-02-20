@@ -192,7 +192,7 @@
 		<MSBuild
 		  Projects=".\setup\PowerShellSetup.Test\PowerShellSetup.Test.csproj"
 		  Targets="Build"
-		  Properties="Configuration=$(Configuration);Platform=Any CPU"
+		  Properties="Configuration=$(Configuration);Platform=AnyCPU"
 		  ContinueOnError="false"
 		  Condition=" '$(Scope)' == 'all' "/>
 	</Target>
