@@ -235,7 +235,7 @@
       DestinationFolder="$(LibrarySourceFolder)\Package\$(Configuration)" />
     <Copy SourceFiles="$(LibraryRoot)tools\AzureStack\AzureStack.psm1" 
       DestinationFolder="$(LibrarySourceFolder)\Package\$(Configuration)" Condition="Exists('$(LibraryRoot)tools\AzureStack\AzureStack.psm1')"/>
-	<Copy SourceFiles="$(LibraryRoot)\setup\PowerShellSetup.Test\**\PowerShellSetup.Test.dll"
+	<Copy SourceFiles="$(LibraryRoot)\setup\PowerShellSetup.Test\bin\$(Configuration)\PowerShellSetup.Test.dll"
       DestinationFolder="$(LibrarySourceFolder)\Package\$(Configuration)" />
    
     <ItemGroup>
